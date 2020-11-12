@@ -26,4 +26,7 @@ class Entry(models.Model):
     def __str__(self):
         """Zwraca reprezentacje modelu w postaci ciagu tekstowego."""
 
-        return f'{self.text[:50]}...'
+        if self.text <= self.text[:50]:
+            return self.text
+        else:
+            return f'{self.text[:50]}...'
