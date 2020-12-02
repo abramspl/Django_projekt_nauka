@@ -17,6 +17,6 @@ def register(request):
             login(request, new_user)
             return redirect('learning_logs:index')
 
-        # Wyswietlenie pustego formularza.
-        conext = {'form': form}
-        return render(request, 'registration/register.html', conext)
+    # Wyswietlenie pustego formularza.
+    conext = {'form': form}
+    return render(request, 'registration/register.html', conext)
