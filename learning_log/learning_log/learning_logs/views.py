@@ -4,6 +4,10 @@ from django.http import HttpResponseRedirect, Http404
 from .models import Topic, Entry
 from .forms import TopicForm, EntryForm
 
+def check_topic_owner(request, topic):
+    if topic.owner != request.user:
+        raise Http404
+
 # Miejsce na utworzenie widokow
 def index(request):
     """Strona glowna dla aplikacji Learning Log"""
@@ -24,8 +28,7 @@ def topic(request, topic_id):
 
     topic =Topic.objects.get(id=topic_id)
     # Upewniany sie, ze temat nalezy do biezacego uzytkownika.
-    if topic.owner != request.user:
-        raise Http404
+    check_topic_owner(request, topic)
 
     entries = topic.entry_set.order_by('-date_added')
     context = {'topic': topic, 'entries': entries}
@@ -65,6 +68,7 @@ def new_entry(request, topic_id):
         form = EntryForm(data=request.POST)
         if form.is_valid():
             new_entry = form.save(commit=False)
+            new_entry.owner = request.user
             new_entry.topic = topic
             new_entry.save()
             return redirect('learning_logs:topic', topic_id=topic_id)
@@ -79,8 +83,7 @@ def edit_entry(request, entry_id):
 
     entry = Entry.objects.get(id=entry_id)
     topic = entry.topic
-    if topic.owner != request.user:
-        raise Http404
+    check_topic_owner(request,topic)
 
     if request.method != 'POST':
         # Zadanie poczatkowe, wypelnienie formularza aktualna trescia wpisu.
