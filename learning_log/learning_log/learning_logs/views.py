@@ -77,6 +77,8 @@ def edit_entry(request, entry_id):
 
     entry = Entry.objects.get(id=entry_id)
     topic = entry.topic
+    if topic.owner != request.user:
+        raise Http404
 
     if request.method != 'POST':
         # Zadanie poczatkowe, wypelnienie formularza aktualna trescia wpisu.
